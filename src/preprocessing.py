@@ -1,53 +1,51 @@
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
 import pickle
 import os
 
 DATA_PATH = "./Data/train.csv"
 MODELS_PATH = "./models"
 
-if not os.path.exists(DATA_PATH):
-    raise FileNotFoundError(f"Le fichier {DATA_PATH} est introuvable !")
-
 if not os.path.exists(MODELS_PATH):
     os.makedirs(MODELS_PATH)
 
 df = pd.read_csv(DATA_PATH)
-
-# Séparer X et y
 y = df["target"]
 X = df.drop(columns=["ID_code", "target"])
 
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+# =========================
+# Sélection des features via LightGBM
+# =========================
+# Entraîner un LGBM pour obtenir l'importance des features
+lgbm = LGBMClassifier(n_estimators=500, learning_rate=0.05, random_state=42, class_weight="balanced")
+lgbm.fit(X, y)
 
-# Sauvegarder le scaler
+# Récupérer les importances
+importances = pd.Series(lgbm.feature_importances_, index=X.columns)
+importances_sorted = importances.sort_values(ascending=False)
+
+# 70 features pour le modèle
+selected_features_model = importances_sorted.head(70).index.tolist()
+with open(os.path.join(MODELS_PATH, "selected_features.pkl"), "wb") as f:
+    pickle.dump(selected_features_model, f)
+print("70 features sélectionnées pour le modèle :")
+print(selected_features_model)
+
+# 15 features pour le questionnaire
+selected_features_questionnaire = importances_sorted.head(15).index.tolist()
+with open(os.path.join(MODELS_PATH, "selected_features_questionnaire.pkl"), "wb") as f:
+    pickle.dump(selected_features_questionnaire, f)
+print("70 features sélectionnées pour le questionnaire :")
+print(selected_features_questionnaire)
+
+# =========================
+# Scaler sur les 70 features pour le modèle
+# =========================
+X_selected = X[selected_features_model]
+scaler = StandardScaler()
+scaler.fit(X_selected)
+
 with open(os.path.join(MODELS_PATH, "scaler.pkl"), "wb") as f:
     pickle.dump(scaler, f)
-print("Scaler sauvegardé dans models/scaler.pkl")
-
-# =========================
-# Sélection des 33 features via régression logistique
-# =========================
-lr = LogisticRegression(max_iter=1000, solver="liblinear", class_weight="balanced")
-lr.fit(X_scaled, y)
-
-# Récupérer les coefficients
-coefs = np.abs(lr.coef_[0])
-features = X.columns
-feature_coef = list(zip(features, coefs))
-
-# Trier par importance décroissante
-feature_coef_sorted = sorted(feature_coef, key=lambda x: x[1], reverse=True)
-
-# Garder les 33 plus importantes
-selected_features = [feat for feat, coef in feature_coef_sorted[:33]]
-print("33 features sélectionnées :")
-print(selected_features)
-
-# Sauvegarder les features sélectionnées
-with open(os.path.join(MODELS_PATH, "selected_features.pkl"), "wb") as f:
-    pickle.dump(selected_features, f)
-print("Features sauvegardées dans models/selected_features.pkl")
+print("Scaler sauvegardé dans models/scaler.pkl (fit sur 70 features)")
