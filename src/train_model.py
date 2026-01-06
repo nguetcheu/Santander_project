@@ -2,8 +2,6 @@ import pandas as pd
 import pickle
 import os
 import json
-import shap
-import matplotlib.pyplot as plt
 from lightgbm import LGBMClassifier, early_stopping, log_evaluation
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, precision_score, recall_score, f1_score
@@ -45,9 +43,7 @@ X_train, X_val, y_train, y_val = train_test_split(
 
 X_val_df = pd.DataFrame(X_val, columns=selected_features_model)
 
-# =========================
-# MODEL
-# =========================
+
 model = LGBMClassifier(
     n_estimators=2000,
     learning_rate=0.05,
@@ -93,36 +89,3 @@ with open(os.path.join(MODELS_PATH, "metrics.json"), "w") as f:
     json.dump(metrics, f, indent=4)
 
 print("Modèle et métriques sauvegardés.")
-
-# =========================
-# SHAP EXPLICABILITY
-# =========================
-print("Calcul SHAP en cours...")
-
-explainer = shap.TreeExplainer(model)
-shap_values = explainer.shap_values(X_val_df)
-
-# Summary plot (global importance)
-shap.summary_plot(
-    shap_values,
-    X_val_df,
-    show=False
-)
-plt.tight_layout()
-plt.savefig(os.path.join(MODELS_PATH, "shap_summary.png"))
-plt.close()
-
-# Bar plot (importance globale simplifiée)
-shap.summary_plot(
-    shap_values,
-    X_val_df,
-    plot_type="bar",
-    show=False
-)
-plt.tight_layout()
-plt.savefig(os.path.join(MODELS_PATH, "shap_bar.png"))
-plt.close()
-
-print("SHAP généré :")
-print("- models/shap_summary.png")
-print("- models/shap_bar.png")
