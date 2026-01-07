@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask import render_template
 import pandas as pd
 import numpy as np
 import pickle
@@ -40,6 +41,10 @@ with open(metrics_file, "r") as f:
 # Charger les médianes des features
 df = pd.read_csv(DATA_PATH)
 feature_medians = df[model_features].median().to_dict()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route("/health", methods=["GET"])
 def health():

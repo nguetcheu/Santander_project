@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Décision de Crédit</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Simulation d'accord de crédit</h1>
+      <p class="subtitle">Veuillez remplir les informations client</p>
+
+      <form id="credit-form">
+        <div class="grid">
+          <input
+            type="number"
+            step="any"
+            name="var_174"
+            placeholder="var_174"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_133"
+            placeholder="var_133"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_53"
+            placeholder="var_53"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_34"
+            placeholder="var_34"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_99"
+            placeholder="var_99"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_165"
+            placeholder="var_165"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_190"
+            placeholder="var_190"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_6"
+            placeholder="var_6"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_22"
+            placeholder="var_22"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_12"
+            placeholder="var_12"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_146"
+            placeholder="var_146"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_76"
+            placeholder="var_76"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_166"
+            placeholder="var_166"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_78"
+            placeholder="var_78"
+            required
+          />
+          <input
+            type="number"
+            step="any"
+            name="var_21"
+            placeholder="var_21"
+            required
+          />
+        </div>
+
+        <button type="submit">Analyser le dossier</button>
+      </form>
+
+      <div id="result" class="hidden">
+        <h2>Résultat</h2>
+        <p id="decision"></p>
+        <p id="score"></p>
+
+        <h3>Facteurs défavorables</h3>
+        <ul id="negative-features"></ul>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("credit-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData.entries());
+
+          // convertir les valeurs en float
+          for (let key in data) {
+            data[key] = parseFloat(data[key]);
+          }
+
+          const response = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          document.getElementById("result").classList.remove("hidden");
+          document.getElementById("decision").innerText =
+            "Décision : " + result.decision;
+          document.getElementById("score").innerText =
+            "Score : " + result.score_percent + " %";
+
+          const list = document.getElementById("negative-features");
+          list.innerHTML = "";
+
+          result.top_negative_features.forEach((item) => {
+            const li = document.createElement("li");
+            li.innerText = `${item.feature} (impact: ${item.impact.toFixed(
+              2
+            )})`;
+            list.appendChild(li);
+          });
+        });
+    </script>
+  </body>
+</html>
