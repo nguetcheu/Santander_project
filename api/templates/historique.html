@@ -2,88 +2,134 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Décision de Crédit</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historique des demandes - PMN BANK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <div class="container">
-      <h1>Simulation d'accord de crédit</h1>
-      <p class="subtitle">Veuillez remplir les informations client</p>
 
-      <form id="credit-form">
-        <div class="grid">
-          <input type="number" step="any" name="age" placeholder="Âge (ex: 30)" required />
-          <input type="number" step="any" name="monthly_income" placeholder="Revenu mensuel (ex: 5000)" required />
-          <input type="number" step="any" name="personal_contribution" placeholder="Apport personnel (ex: 1000)" required />
-          <input type="number" step="any" name="cdi_duration" placeholder="Durée du CDI (ex: 5 ans)" required />
-          <input type="number" step="any" name="current_credits" placeholder="Nombre de crédits actuels (ex: 3)" required />
-          <input type="number" step="any" name="loan_duration" placeholder="Durée du prêt (ex: 20 ans)" required />
-          <input type="number" step="any" name="monthly_charges" placeholder="Montant charges mensuelles (ex: 200)" required />
-          <input type="number" step="any" name="secondary_income" placeholder="Revenu secondaire (ex: 10)" required />
-          <input type="number" step="any" name="bank_seniority" placeholder="Ancienneté bancaire (ex: 3)" required />
-          <input type="number" step="any" name="property_value" placeholder="Valeur hypothèque (ex: 1200)" required />
-          <input type="number" step="any" name="dependents" placeholder="Nombre de personnes à charge (ex: 2)" required />
-          <input type="number" step="any" name="savings_transfers" placeholder="Nombre de virements/an sur compte épargne (ex: 3)" required />
-          <input type="number" step="any" name="avg_monthly_balance" placeholder="Moyenne du solde mensuel (ex: 400)" required />
-          <input type="number" step="any" name="subscriptions" placeholder="Nombre d'abonnements récurrents (ex: 2)" required />
-          <input type="number" step="any" name="repaid_credits" placeholder="Nombre de crédits remboursés (ex: 2)" required />
+  <body class="bg-slate-50 min-h-screen font-sans">
+    <nav class="bg-blue-800 text-white shadow-md sticky top-0 z-50">
+      <div
+        class="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center"
+      >
+        <a href="/" class="font-extrabold">PMN-BANK</a>
+        <div class="space-x-8 text-sm uppercase font-semibold hidden md:flex">
+          <a href="/" class="hover:text-blue-200">Accueil</a>
+          <a href="/result" class="hover:text-blue-200">Simulation</a>
+          <a href="/historique" class="border-b-2 border-white pb-1"
+            >Historique</a
+          >
         </div>
+      </div>
+    </nav>
 
-        <button type="submit">Analyser le dossier</button>
-      </form>
+    <div class="max-w-7xl mx-auto py-10 px-4">
+      <h1 class="text-3xl font-extrabold text-gray-800 mb-6">
+        Historique des demandes de crédit
+      </h1>
 
-      <div id="result" class="hidden">
-        <h2>Résultat</h2>
-        <p id="decision"></p>
-        <p id="score"></p>
-
-        <h3>Facteurs défavorables</h3>
-        <ul id="negative-features"></ul>
+      <div class="overflow-x-auto bg-white shadow-xl rounded-2xl">
+        <table class="min-w-full border-collapse text-sm">
+          <thead class="bg-blue-700 text-white">
+            <tr>
+              <th class="p-4 text-left">ID</th>
+              <th class="p-4 text-left">Décision</th>
+              <th class="p-4 text-left">Score (%)</th>
+              <th class="p-4 text-left">Données saisis</th>
+              <th class="p-4 text-left">Facteurs défavorables</th>
+            </tr>
+          </thead>
+          <tbody id="history-table" class="divide-y"></tbody>
+        </table>
       </div>
     </div>
 
     <script>
-      document.getElementById("credit-form").addEventListener("submit", async function (e) {
-        e.preventDefault();
+      // Correspondance entre les noms techniques du modèle et les noms lisibles
+      const MODEL_TO_HUMAN = {
+        var_174: "Âge",
+        var_133: "Revenus mensuels",
+        var_53: "Apport personnel",
+        var_34: "Ancienneté CDI",
+        var_99: "Crédits en cours",
+        var_165: "Durée du prêt",
+        var_190: "Charges mensuelles",
+        var_6: "Revenus secondaires",
+        var_22: "Ancienneté bancaire",
+        var_12: "Valeur du patrimoine",
+        var_146: "Personnes à charge",
+        var_76: "Virements épargne",
+        var_166: "Solde moyen mensuel",
+        var_78: "Abonnements",
+        var_21: "Crédits remboursés",
+      };
 
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
+      async function loadHistory() {
+        const response = await fetch("/api/historique");
+        const data = await response.json();
+        console.log(data);
 
-        // Convertir toutes les valeurs en float
-        for (let key in data) {
-          data[key] = parseFloat(data[key]);
-        }
+        const tbody = document.getElementById("history-table");
+        tbody.innerHTML = "";
 
-        try {
-          const response = await fetch("http://127.0.0.1:5000/predict", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          });
+        data.history.forEach((item, index) => {
+          const decisionColor =
+            item.decision === "accord"
+              ? "text-green-700 font-bold"
+              : "text-red-700 font-bold";
 
-          const result = await response.json();
+          const inputsList = Object.entries(item.inputs)
+            .map(
+              ([key, value]) =>
+                `<li><strong>${key}</strong> : ${
+                  value !== null ? value : "N/A"
+                }</li>`
+            )
+            .join("");
 
-          document.getElementById("result").classList.remove("hidden");
-          document.getElementById("decision").innerText = "Décision : " + result.decision;
-          document.getElementById("score").innerText = "Score d’acceptation : " + result.score_percent + " %";
+          // Logique de conversion des facteurs négatifs
+          const negatives =
+            item.decision === "refus" && item.top_negative_features
+              ? `<ul class="list-disc pl-5 text-red-700">
+                ${item.top_negative_features
+                  .map((f) => {
+                    // On cherche le nom réel dans le dictionnaire, sinon on garde le nom technique
+                    const realName = MODEL_TO_HUMAN[f.feature] || f.feature;
+                    return `<li>${realName} (impact ${f.impact.toFixed(
+                      2
+                    )})</li>`;
+                  })
+                  .join("")}
+              </ul>`
+              : `<span class="text-green-600 font-semibold">—</span>`;
 
-          const list = document.getElementById("negative-features");
-          list.innerHTML = "";
+          const row = document.createElement("tr");
+          row.className = "hover:bg-gray-50 border-b";
 
-          if (result.top_negative_features) {
-            result.top_negative_features.forEach(item => {
-              const li = document.createElement("li");
-              li.innerText = `${item.feature} (impact: ${item.impact.toFixed(2)})`;
-              list.appendChild(li);
-            });
-          } else {
-            list.innerHTML = "<li>Aucun facteur défavorable</li>";
-          }
+          row.innerHTML = `
+        <td class="p-4 font-bold">${index + 1}</td>
+        <td class="p-4 ${decisionColor}">${item.decision.toUpperCase()}</td>
+        <td class="p-4">${item.score_percent} %</td>
+        <td class="p-4">
+            <details class="bg-gray-50 p-2 rounded">
+                <summary class="cursor-pointer text-blue-700 font-semibold">
+                    Voir les détails
+                </summary>
+                <ul class="mt-2 text-gray-700 text-xs space-y-1">
+                    ${inputsList}
+                </ul>
+            </details>
+        </td>
+        <td class="p-4">
+            ${negatives}
+        </td>
+      `;
 
-        } catch (err) {
-          alert("Erreur lors de la requête : " + err);
-        }
-      });
+          tbody.appendChild(row);
+        });
+      }
+
+      loadHistory();
     </script>
   </body>
 </html>

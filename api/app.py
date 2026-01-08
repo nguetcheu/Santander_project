@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from datetime import datetime
 import pandas as pd
 import numpy as np
 import pickle
@@ -8,6 +9,12 @@ import os
 import json
 
 MODELS_PATH = "./models"
+HISTORY_FILE = os.path.join(MODELS_PATH, "history.json")
+
+if not os.path.exists(HISTORY_FILE):
+    with open(HISTORY_FILE, "w") as f:
+        json.dump([], f)
+        
 DATA_PATH = "./Data/train.csv"
 
 app = Flask(__name__)
@@ -63,6 +70,24 @@ def index():
 @app.route("/result")
 def result():
     return render_template("result.html")
+
+@app.route("/historique")
+def historique():
+    return render_template("historique.html")
+
+@app.route("/api/historique")
+def historique_api():
+    try:
+        with open(HISTORY_FILE, "r") as f:
+            history = json.load(f)
+
+        return jsonify({
+            "total_requests": len(history),
+            "history": history[::-1]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -125,6 +150,25 @@ def predict():
             })
             top_negatives = feature_impacts.sort_values("impact").head(5)
             response["top_negative_features"] = top_negatives.to_dict(orient="records")
+            
+        # Enregistrer l'historique
+        with open(HISTORY_FILE, "r") as f:
+            history = json.load(f)
+
+            history_entry = {
+                "timestamp": datetime.now().isoformat(),
+                "decision": decision,
+                "score_percent": score_percent,
+                "inputs": data
+            }
+
+            if decision == "refus":
+                history_entry["top_negative_features"] = response.get("top_negative_features", [])
+
+            history.append(history_entry)
+
+            with open(HISTORY_FILE, "w") as f:
+                json.dump(history, f, indent=4)
 
         return jsonify(response), 200
 
