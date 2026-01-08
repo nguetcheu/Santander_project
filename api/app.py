@@ -10,18 +10,17 @@ import json
 
 MODELS_PATH = "./models"
 HISTORY_FILE = os.path.join(MODELS_PATH, "history.json")
+MEDIANS_FILE = os.path.join(MODELS_PATH, "feature_medians.json")
 
 if not os.path.exists(HISTORY_FILE):
     with open(HISTORY_FILE, "w") as f:
         json.dump([], f)
-        
-DATA_PATH = "./Data/train.csv"
 
 app = Flask(__name__)
 CORS(app)
 
 # =========================
-# LOAD MODEL, SCALER, FEATURES, METRICS
+# LOAD MODEL, SCALER, FEATURES, METRICS & MEDIANS
 # =========================
 with open(os.path.join(MODELS_PATH, "best_model.pkl"), "rb") as f:
     model = pickle.load(f)
@@ -38,9 +37,13 @@ with open(os.path.join(MODELS_PATH, "selected_features_questionnaire.pkl"), "rb"
 with open(os.path.join(MODELS_PATH, "metrics.json"), "r") as f:
     model_metrics = json.load(f)
 
-# Charger les médianes pour remplir les features manquantes
-df = pd.read_csv(DATA_PATH)
-feature_medians = df[model_features].median().to_dict()
+# CHARGEMENT DES MÉDIANES (Remplacent le CSV de 300Mo)
+if os.path.exists(MEDIANS_FILE):
+    with open(MEDIANS_FILE, "r") as f:
+        feature_medians = json.load(f)
+else:
+    # Optionnel: lever une erreur si le fichier est absent au démarrage
+    raise FileNotFoundError(f"Le fichier {MEDIANS_FILE} est requis pour le déploiement.")
 
 HUMAN_TO_MODEL = {
     "age": ("var_174", 100),
@@ -80,12 +83,10 @@ def historique_api():
     try:
         with open(HISTORY_FILE, "r") as f:
             history = json.load(f)
-
         return jsonify({
             "total_requests": len(history),
             "history": history[::-1]
         }), 200
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -110,65 +111,62 @@ def predict():
         if not data:
             return jsonify({"error": "Empty request body"}), 400
 
-        # Vérifier que toutes les inputs humains sont présentes
         missing_inputs = [k for k in HUMAN_TO_MODEL.keys() if k not in data]
         if missing_inputs:
             return jsonify({"error": f"Missing inputs: {missing_inputs}"}), 400
 
-        # Créer le DataFrame complet pour le modèle
+        # Créer le DataFrame
         X_input = pd.DataFrame(columns=model_features, index=[0])
 
-        # Remplir les features du questionnaire avec la normalisation
+        # Remplir les features du questionnaire
         for human_name, (var_name, divisor) in HUMAN_TO_MODEL.items():
             X_input.at[0, var_name] = data[human_name] / divisor
 
-        # Remplir le reste avec la médiane
+        # Remplir le reste avec les médianes chargées depuis le JSON
         for f in model_features:
             if pd.isna(X_input.at[0, f]):
                 X_input.at[0, f] = feature_medians[f]
 
-        # Appliquer le scaler
+        # Scaler + Prédiction
         X_scaled = scaler.transform(X_input)
-
-        # Prédiction
         proba = model.predict_proba(X_scaled)[0][1]
         score_percent = round(proba * 100, 1)
         decision = "accord" if proba >= 0.7 else "refus"
 
         response = {"score_percent": score_percent, "decision": decision}
 
-        # Explication SHAP si refus
+        # SHAP
         if decision == "refus":
             explainer = shap.TreeExplainer(model)
             shap_values = explainer.shap_values(X_scaled)
             shap_values_client = shap_values[0] if isinstance(shap_values, list) else shap_values
-
+            
             feature_impacts = pd.DataFrame({
                 "feature": model_features,
                 "value": X_input.values[0],
-                "impact": shap_values_client[0] if isinstance(shap_values_client, np.ndarray) else shap_values_client
+                "impact": shap_values_client[0] if len(shap_values_client.shape) > 1 else shap_values_client
             })
             top_negatives = feature_impacts.sort_values("impact").head(5)
             response["top_negative_features"] = top_negatives.to_dict(orient="records")
             
-        # Enregistrer l'historique
+        # Historique
         with open(HISTORY_FILE, "r") as f:
             history = json.load(f)
 
-            history_entry = {
-                "timestamp": datetime.now().isoformat(),
-                "decision": decision,
-                "score_percent": score_percent,
-                "inputs": data
-            }
+        history_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "decision": decision,
+            "score_percent": score_percent,
+            "inputs": data
+        }
 
-            if decision == "refus":
-                history_entry["top_negative_features"] = response.get("top_negative_features", [])
+        if decision == "refus":
+            history_entry["top_negative_features"] = response.get("top_negative_features", [])
 
-            history.append(history_entry)
+        history.append(history_entry)
 
-            with open(HISTORY_FILE, "w") as f:
-                json.dump(history, f, indent=4)
+        with open(HISTORY_FILE, "w") as f:
+            json.dump(history, f, indent=4)
 
         return jsonify(response), 200
 

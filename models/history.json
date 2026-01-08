@@ -1,87 +1,116 @@
 [
-  {
-    "timestamp": "2026-01-08T13:51:11.415117",
-    "decision": "refus",
-    "score_percent": 64.9,
-    "inputs": {
-      "nom": null,
-      "prenom": null,
-      "email": null,
-      "tel": 660069203,
-      "cp": 38000,
-      "montant": 20000,
-      "situation": null,
-      "age": 27,
-      "monthly_income": 1300,
-      "personal_contribution": 1000,
-      "cdi_duration": 4,
-      "current_credits": 3,
-      "loan_duration": 15,
-      "monthly_charges": 500,
-      "secondary_income": 100,
-      "bank_seniority": 3,
-      "property_value": 1000,
-      "dependents": 2,
-      "savings_transfers": 3,
-      "avg_monthly_balance": 50000,
-      "subscriptions": 2,
-      "repaid_credits": 2
+    {
+        "timestamp": "2026-01-08T13:51:11.415117",
+        "decision": "refus",
+        "score_percent": 64.9,
+        "inputs": {
+            "nom": null,
+            "prenom": null,
+            "email": null,
+            "tel": 660069203,
+            "cp": 38000,
+            "montant": 20000,
+            "situation": null,
+            "age": 27,
+            "monthly_income": 1300,
+            "personal_contribution": 1000,
+            "cdi_duration": 4,
+            "current_credits": 3,
+            "loan_duration": 15,
+            "monthly_charges": 500,
+            "secondary_income": 100,
+            "bank_seniority": 3,
+            "property_value": 1000,
+            "dependents": 2,
+            "savings_transfers": 3,
+            "avg_monthly_balance": 50000,
+            "subscriptions": 2,
+            "repaid_credits": 2
+        },
+        "top_negative_features": [
+            {
+                "feature": "var_133",
+                "value": 0.13,
+                "impact": -0.16008289154855984
+            },
+            {
+                "feature": "var_22",
+                "value": 0.3,
+                "impact": -0.15587872990823368
+            },
+            {
+                "feature": "var_6",
+                "value": 0.02,
+                "impact": -0.1426319923395929
+            },
+            {
+                "feature": "var_78",
+                "value": 0.2,
+                "impact": -0.13856515421590004
+            },
+            {
+                "feature": "var_190",
+                "value": 0.1,
+                "impact": -0.1300321066026359
+            }
+        ]
     },
-    "top_negative_features": [
-      {
-        "feature": "var_133",
-        "value": 0.13,
-        "impact": -0.16008289154855984
-      },
-      {
-        "feature": "var_22",
-        "value": 0.3,
-        "impact": -0.15587872990823368
-      },
-      {
-        "feature": "var_6",
-        "value": 0.02,
-        "impact": -0.1426319923395929
-      },
-      {
-        "feature": "var_78",
-        "value": 0.2,
-        "impact": -0.13856515421590004
-      },
-      {
-        "feature": "var_190",
-        "value": 0.1,
-        "impact": -0.1300321066026359
-      }
-    ]
-  },
-  {
-    "timestamp": "2026-01-08T14:01:03.404229",
-    "decision": "accord",
-    "score_percent": 76.0,
-    "inputs": {
-      "nom": null,
-      "prenom": null,
-      "email": null,
-      "tel": 660069203,
-      "cp": 38000,
-      "montant": 5888,
-      "situation": null,
-      "age": 23,
-      "monthly_income": 1222,
-      "personal_contribution": 111,
-      "cdi_duration": 2,
-      "current_credits": 2,
-      "loan_duration": 23,
-      "monthly_charges": 2000,
-      "secondary_income": 100,
-      "bank_seniority": 3,
-      "property_value": 2000,
-      "dependents": 2,
-      "savings_transfers": 2,
-      "avg_monthly_balance": 400,
-      "subscriptions": 2,
-      "repaid_credits": 2
+    {
+        "timestamp": "2026-01-08T14:01:03.404229",
+        "decision": "accord",
+        "score_percent": 76.0,
+        "inputs": {
+            "nom": null,
+            "prenom": null,
+            "email": null,
+            "tel": 660069203,
+            "cp": 38000,
+            "montant": 5888,
+            "situation": null,
+            "age": 23,
+            "monthly_income": 1222,
+            "personal_contribution": 111,
+            "cdi_duration": 2,
+            "current_credits": 2,
+            "loan_duration": 23,
+            "monthly_charges": 2000,
+            "secondary_income": 100,
+            "bank_seniority": 3,
+            "property_value": 2000,
+            "dependents": 2,
+            "savings_transfers": 2,
+            "avg_monthly_balance": 400,
+            "subscriptions": 2,
+            "repaid_credits": 2
+        }
+    },
+    {
+        "timestamp": "2026-01-08T14:58:01.791994",
+        "decision": "accord",
+        "score_percent": 76.0,
+        "inputs": {
+            "nom": null,
+            "prenom": null,
+            "email": null,
+            "tel": 660069203,
+            "cp": 38000,
+            "montant": 20000,
+            "situation": null,
+            "age": 23,
+            "monthly_income": 4000,
+            "personal_contribution": 1200,
+            "cdi_duration": 3,
+            "current_credits": 2,
+            "loan_duration": 13,
+            "monthly_charges": 200,
+            "secondary_income": 100,
+            "bank_seniority": 2,
+            "property_value": 1200,
+            "dependents": 2,
+            "savings_transfers": 3,
+            "avg_monthly_balance": 300,
+            "subscriptions": 2,
+            "repaid_credits": 2
+        }
     }
-  }
 ]
