@@ -60,6 +60,10 @@ HUMAN_TO_MODEL = {
 def index():
     return render_template("index.html")
 
+@app.route("/result")
+def result():
+    return render_template("result.html")
+
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"}), 200

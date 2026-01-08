@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMN-BANK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans">
+
+    <nav class="bg-blue-800 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div class="flex  space-x-2">
+                <a class="navbar-brand" href="/">PMN-BANK</a>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm uppercase font-semibold">
+                <a href="/" class="hover:text-blue-200 transition" >Accueil</a>
+                <a href="/result" class="border-b-2 border-white pb-1" >Simulation</a>
+                <a href="#" class="hover:text-blue-200 transition">Statistiques</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="max-w-5xl mx-auto py-10 px-4">
+        <div class="bg-white shadow-2xl rounded-3xl overflow-hidden">
+            
+            <div class="bg-gradient-to-r from-blue-700 to-blue-500 p-8 text-white">
+                <h1 class="text-3xl font-extrabold">Prêt modulable</h1>
+                <p class="mt-2 text-blue-100 italic">Le prêt immobilier, une réponse personnalisée à vos projets d'achat, de construction ou de rénovation. Concrétisez votre rêve immobilier en toute sérénité..</p>
+            </div>
+
+                <form id="credit-form" class="p-8 space-y-10">
+                      
+                    <section>
+                        <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                            Informations Personnelles
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase">Nom & Prénom</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" name="nom" placeholder="Nom" class="w-1/2 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-400" required>
+                                    <input type="text" name="prenom" placeholder="Prénom" class="w-1/2 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-400" required>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase">Contact</label>
+                                <input type="email" name="email" placeholder="Email" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-400" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase">Téléphone</label>
+                                <input type="tel" name="tel" placeholder="06 00 00 00 00" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-400" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase">Code Postal</label>
+                                <input type="text" name="cp" placeholder="75000" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-400" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase font-black text-blue-600">Montant Souhaité (€)</label>
+                                <input type="number" name="montant" placeholder="Ex: 200000" class="w-full p-3 border-2 border-blue-200 rounded-xl outline-none bg-blue-50 focus:border-blue-500 font-bold" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase font-black">Situation Familiale</label>
+                                <select name="situation" class="w-full p-3 border rounded-xl outline-none bg-white focus:ring-2 focus:ring-blue-400">
+                                    <option value="marie">Marié(e) / Pacsé(e)</option>
+                                    <option value="celibataire">Célibataire</option>
+                                    <option value="divorce">Divorcé(e)</option>
+                                    <option value="veuf">Veuf / Veuve</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section>
+                        <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                            informations financières
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="space-y-4 bg-gray-50 p-4 rounded-2xl">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Âge</label>
+                                    <input type="number" step="any" name="age" placeholder="ex: 30" class="w-full p-2 border rounded-lg outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Revenu mensuel</label>
+                                    <input type="number" step="any" name="monthly_income" placeholder=" ex: 5000" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                <label class="block text-xs font-semibold text-gray-600">Apport personnel</label>
+                                    <input type="number" step="any" name="personal_contribution" placeholder=" ex: 1000" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                <label class="block text-xs font-semibold text-gray-600">Durée du CDI</label>
+                                    <input type="number" step="any" name="cdi_duration" placeholder="ex: 5 ans" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                <label class="block text-xs font-semibold text-gray-600">Nombre de crédits actuels</label>
+                                    <input type="number" step="any" name="current_credits" placeholder="ex: 3" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                            </div>
+                            <div class="space-y-4 bg-gray-50 p-4 rounded-2xl">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Durée du prêt</label>
+                                    <input type="number" step="any" name="loan_duration" placeholder="ex: 20 ans" class="w-full p-2 border rounded-lg outline-none" required />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Montant charges mensuelles</label>
+                                    <input type="number" step="any" name="monthly_charges" placeholder="ex: 200" class="w-full p-2 border rounded-lg outline-none" required />  
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Revenu secondaire</label>
+                                    <input type="number" step="any" name="secondary_income" placeholder="ex: 10" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Ancienneté bancaire</label>
+                                    <input type="number" step="any" name="bank_seniority" placeholder="ex: 3" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Valeur hypothèque</label>
+                                    <input type="number" step="any" name="property_value" placeholder="ex: 1200" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                            </div>
+                            <div class="space-y-4 bg-gray-50 p-4 rounded-2xl">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Nombre de personnes à charge</label>
+                                    <input type="number" step="any" name="dependents" placeholder="ex: 2" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Nombre de virements/an sur compte épargne</label>
+                                    <input type="number" step="any" name="savings_transfers" placeholder="ex: 3" class="w-full p-2 border rounded-lg outline-none" required />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Moyenne du solde mensuel</label>
+                                    <input type="number" step="any" name="avg_monthly_balance" placeholder="ex: 400" class="w-full p-2 border rounded-lg outline-none" required /> 
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Nombre d'abonnements récurrents</label>
+                                    <input type="number" step="any" name="subscriptions" placeholder="ex: 2" class="w-full p-2 border rounded-lg outline-none" required />  
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Nombre de crédits remboursés</label>
+                                    <input type="number" step="any" name="repaid_credits" placeholder="ex: 2" class="w-full p-2 border rounded-lg outline-none" required />  
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </section>
+                    <button type="submit" class="w-full bg-blue-700 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-800 transform hover:-translate-y-1 transition duration-200 uppercase tracking-widest">
+                        Lancer l'Analyse ScoreApp
+                    </button>
+                </form>
+
+            <div id="result" class="hidden m-8 p-8 rounded-3xl border-4 animate-pulse">
+                <h2>Résultat</h2>
+                <p id="decision"></p>
+                <p id="score"></p>
+
+                <h3>Facteurs défavorables</h3>
+                <ul id="negative-features"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      document.getElementById("credit-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        // Convertir toutes les valeurs en float
+        for (let key in data) {
+          data[key] = parseFloat(data[key]);
+        }
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          document.getElementById("result").classList.remove("hidden");
+          document.getElementById("decision").innerText = "Décision : " + result.decision;
+          document.getElementById("score").innerText = "Score d’acceptation : " + result.score_percent + " %";
+
+          const list = document.getElementById("negative-features");
+          list.innerHTML = "";
+
+          if (result.top_negative_features) {
+            result.top_negative_features.forEach(item => {
+              const li = document.createElement("li");
+              li.innerText = `${item.feature} (impact: ${item.impact.toFixed(2)})`;
+              list.appendChild(li);
+            });
+          } else {
+            list.innerHTML = "<li>Aucun facteur défavorable</li>";
+          }
+
+        } catch (err) {
+          alert("Erreur lors de la requête : " + err);
+        }
+      });
+    </script>
+  </body>
+</html>

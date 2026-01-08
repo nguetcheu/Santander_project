@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Décision de Crédit</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Simulation d'accord de crédit</h1>
+      <p class="subtitle">Veuillez remplir les informations client</p>
+
+      <form id="credit-form">
+        <div class="grid">
+          <input type="number" step="any" name="age" placeholder="Âge (ex: 30)" required />
+          <input type="number" step="any" name="monthly_income" placeholder="Revenu mensuel (ex: 5000)" required />
+          <input type="number" step="any" name="personal_contribution" placeholder="Apport personnel (ex: 1000)" required />
+          <input type="number" step="any" name="cdi_duration" placeholder="Durée du CDI (ex: 5 ans)" required />
+          <input type="number" step="any" name="current_credits" placeholder="Nombre de crédits actuels (ex: 3)" required />
+          <input type="number" step="any" name="loan_duration" placeholder="Durée du prêt (ex: 20 ans)" required />
+          <input type="number" step="any" name="monthly_charges" placeholder="Montant charges mensuelles (ex: 200)" required />
+          <input type="number" step="any" name="secondary_income" placeholder="Revenu secondaire (ex: 10)" required />
+          <input type="number" step="any" name="bank_seniority" placeholder="Ancienneté bancaire (ex: 3)" required />
+          <input type="number" step="any" name="property_value" placeholder="Valeur hypothèque (ex: 1200)" required />
+          <input type="number" step="any" name="dependents" placeholder="Nombre de personnes à charge (ex: 2)" required />
+          <input type="number" step="any" name="savings_transfers" placeholder="Nombre de virements/an sur compte épargne (ex: 3)" required />
+          <input type="number" step="any" name="avg_monthly_balance" placeholder="Moyenne du solde mensuel (ex: 400)" required />
+          <input type="number" step="any" name="subscriptions" placeholder="Nombre d'abonnements récurrents (ex: 2)" required />
+          <input type="number" step="any" name="repaid_credits" placeholder="Nombre de crédits remboursés (ex: 2)" required />
+        </div>
+
+        <button type="submit">Analyser le dossier</button>
+      </form>
+
+      <div id="result" class="hidden">
+        <h2>Résultat</h2>
+        <p id="decision"></p>
+        <p id="score"></p>
+
+        <h3>Facteurs défavorables</h3>
+        <ul id="negative-features"></ul>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("credit-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        // Convertir toutes les valeurs en float
+        for (let key in data) {
+          data[key] = parseFloat(data[key]);
+        }
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          document.getElementById("result").classList.remove("hidden");
+          document.getElementById("decision").innerText = "Décision : " + result.decision;
+          document.getElementById("score").innerText = "Score d’acceptation : " + result.score_percent + " %";
+
+          const list = document.getElementById("negative-features");
+          list.innerHTML = "";
+
+          if (result.top_negative_features) {
+            result.top_negative_features.forEach(item => {
+              const li = document.createElement("li");
+              li.innerText = `${item.feature} (impact: ${item.impact.toFixed(2)})`;
+              list.appendChild(li);
+            });
+          } else {
+            list.innerHTML = "<li>Aucun facteur défavorable</li>";
+          }
+
+        } catch (err) {
+          alert("Erreur lors de la requête : " + err);
+        }
+      });
+    </script>
+  </body>
+</html>
