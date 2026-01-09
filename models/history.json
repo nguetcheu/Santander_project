@@ -112,5 +112,27 @@
             "subscriptions": 2,
             "repaid_credits": 2
         }
+    },
+    {
+        "timestamp": "2026-01-09T10:23:38.044130",
+        "decision": "accord",
+        "score_percent": 76.0,
+        "inputs": {
+            "age": 23,
+            "monthly_income": 4000,
+            "personal_contribution": 200,
+            "cdi_duration": 2,
+            "current_credits": 2,
+            "loan_duration": 29,
+            "monthly_charges": 200,
+            "secondary_income": 200,
+            "bank_seniority": 2,
+            "property_value": 1000,
+            "dependents": 2,
+            "savings_transfers": 2,
+            "avg_monthly_balance": 300,
+            "subscriptions": 2,
+            "repaid_credits": 2
+        }
     }
 ]

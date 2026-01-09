@@ -142,6 +142,53 @@ python src/explain_model.py
 `cd api`
 python app.py
 
+5. Test avec Postman :
+- En local: 
+-> information sur le model : http://127.0.0.1:5000/model-info
+-> voir si le model est lancé : http://127.0.0.1:5000/health
+-> la prediction : http://127.0.0.1:5000/predict
+   body:
+   {
+      "age": 100,
+      "monthly_income": 10000,
+      "personal_contribution": 25000,
+      "cdi_duration": 10,
+      "current_credits": 10,
+      "loan_duration": 25,
+      "monthly_charges": 5000,
+      "secondary_income": 5000,
+      "bank_seniority":  10,
+      "property_value": 250000,
+      "dependents": 5,
+      "savings_transfers":10,
+      "avg_monthly_balance": 10000,
+      "subscriptions": 10,
+      "repaid_credits": 5
+   }
+
+- En ligne: 
+-> information sur le model : https://santander-project.onrender.com/model-info
+-> voir si le model est lancé : https://santander-project.onrender.com/health
+-> la prediction : https://santander-project.onrender.com/predict
+   body:
+   {
+      "age": 100,
+      "monthly_income": 10000,
+      "personal_contribution": 25000,
+      "cdi_duration": 10,
+      "current_credits": 10,
+      "loan_duration": 25,
+      "monthly_charges": 5000,
+      "secondary_income": 5000,
+      "bank_seniority":  10,
+      "property_value": 250000,
+      "dependents": 5,
+      "savings_transfers":10,
+      "avg_monthly_balance": 10000,
+      "subscriptions": 10,
+      "repaid_credits": 5
+   }
+
 ## 📝 Notes
 
 Les scripts sont indépendants pour permettre des tests modulaires.
